@@ -3,6 +3,12 @@
   "name": "GitHub Ctrl+P → Profil",
   "version": "1.0.0",
   "description": "Sur github.com, Ctrl+P ouvre ton profil GitHub.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "github-ctrlp-profil@perez.local",
+      "strict_min_version": "109.0"
+    }
+  },
   "content_scripts": [
     {
       "matches": ["https://github.com/*"],
