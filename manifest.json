@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "GitHub Ctrl+P → Profil",
+  "version": "1.0.0",
+  "description": "Sur github.com, Ctrl+P ouvre ton profil GitHub.",
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
