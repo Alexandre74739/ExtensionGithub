@@ -71,16 +71,27 @@ function loadRepos(login) {
 
 // --- Barre de recherche GitHub -----------------------------------------------
 
+// GitHub change régulièrement le balisage de sa recherche : on accepte tout champ texte,
+// le préfixe "owner:<login> " (voir getTerm) suffit à reconnaître la recherche de dépôts.
 function isSearchInput(el) {
-  return (
-    el instanceof HTMLInputElement &&
-    (el.id === "query-builder-test" || el.closest("qbsearch-input") !== null)
-  );
+  return el instanceof HTMLInputElement && (el.type === "text" || el.type === "search");
 }
 
-function findVisibleSearchInput() {
-  const inputs = document.querySelectorAll("#query-builder-test, qbsearch-input input");
-  return [...inputs].find((el) => el.getClientRects().length > 0) || null;
+// À l'ouverture, GitHub place le focus dans le champ de recherche.
+function findOpenSearchInput() {
+  const el = document.activeElement;
+  return isSearchInput(el) && el.getClientRects().length > 0 ? el : null;
+}
+
+function findSearchButton() {
+  return document.querySelector(
+    [
+      'button[aria-label*="to search" i]',
+      'button[aria-haspopup="dialog"][aria-label^="Search" i]',
+      'qbsearch-input [data-target="qbsearch-input.inputButton"]',
+      ".header-search-button",
+    ].join(", ")
+  );
 }
 
 function waitFor(check, timeoutMs = 2000) {
@@ -104,11 +115,10 @@ function setInputValue(input, value) {
 
 async function openRepoSearch(login) {
   loadRepos(login);
-  const button = document.querySelector(
-    'qbsearch-input [data-target="qbsearch-input.inputButton"], .header-search-button'
-  );
+  const button = findSearchButton();
   if (button) button.click();
-  const input = await waitFor(findVisibleSearchInput);
+  else document.dispatchEvent(new KeyboardEvent("keydown", { key: "/", bubbles: true }));
+  const input = await waitFor(findOpenSearchInput);
   if (input) setInputValue(input, `owner:${login} `);
 }
 
